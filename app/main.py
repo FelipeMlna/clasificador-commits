@@ -26,20 +26,51 @@ def health_check():
 
 @app.post("/clasificar")
 async def clasificar_commit(request: CommitRequest):
+
     prompt = f"""
-Clasifica el siguiente mensaje de commit según estas categorías:
+Eres un clasificador de mensajes de commits.
 
-- feat: nueva funcionalidad
-- fix: corrección de errores
-- docs: documentación
-- refactor: modificación interna del código sin cambiar funcionalidad
-- test: pruebas
-- chore: tareas de mantenimiento
+Debes elegir EXACTAMENTE una de estas categorías:
 
-Mensaje del commit:
+feat = nueva funcionalidad
+fix = corrección de un error o bug
+docs = documentación
+refactor = reorganización o mejora interna del código sin cambiar su comportamiento
+test = pruebas
+chore = mantenimiento, configuración o dependencias
+
+REGLAS IMPORTANTES:
+- Si el mensaje corrige un error, usa fix.
+- Si el mensaje agrega o modifica documentación, usa docs.
+- Si el mensaje reorganiza o mejora código existente sin agregar funcionalidad, usa refactor.
+- Si el mensaje agrega una funcionalidad nueva, usa feat.
+- Si el mensaje crea o modifica pruebas, usa test.
+- Si el mensaje actualiza dependencias o configuración, usa chore.
+
+EJEMPLOS:
+"corrige error en el inicio de sesión" -> fix
+"agrega la documentación del proyecto" -> docs
+"refactoriza el servicio de usuarios" -> refactor
+"agrega autenticación con Google" -> feat
+"crea pruebas unitarias para el login" -> test
+"actualiza las dependencias del proyecto" -> chore
+
+MENSAJE A CLASIFICAR:
 "{request.texto}"
 
-Responde únicamente con la categoría y una breve explicación.
+RESPONDE ÚNICAMENTE CON UNA DE ESTAS PALABRAS:
+
+feat
+fix
+docs
+refactor
+test
+chore
+
+No escribas explicaciones.
+No escribas frases adicionales.
+No escribas "CATEGORIA:".
+Responde solamente con una palabra.
 """
 
     payload = {
