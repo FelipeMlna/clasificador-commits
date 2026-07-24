@@ -45,7 +45,7 @@ def test_clasificar_con_motor_ollama():
     mock_response.raise_for_status.return_value = None
 
     with patch(
-        "app.main.httpx.AsyncClient.post",
+        "app.motores.ollama.httpx.AsyncClient.post",
         new_callable=AsyncMock,
         return_value=mock_response
     ):
