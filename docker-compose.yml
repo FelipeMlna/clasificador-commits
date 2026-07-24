@@ -1,8 +1,36 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: clasificador-commits-db
+    environment:
+      POSTGRES_DB: iadb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d iadb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   api:
     build: .
     container_name: clasificador-commits-api
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: iadb
+      DB_USER: app_ia
+      DB_PASSWORD: clave_app_ia
+      MOTOR_POR_DEFECTO: eco
+      OLLAMA_HOST: host.docker.internal
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
