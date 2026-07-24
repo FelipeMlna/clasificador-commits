@@ -64,3 +64,17 @@ def test_clasificar_con_motor_ollama():
     assert data["texto"] == "Fix login bug"
     assert data["motor"] == "ollama"
     assert data["resultado"] == "fix"
+def test_clasificar_con_motor_no_soportado():
+    response = client.post(
+        "/clasificar",
+        json={
+            "texto": "Something",
+            "motor": "inexistente"
+        }
+    )
+
+    assert response.status_code == 400
+
+    data = response.json()
+
+    assert data["detail"] == "Motor no soportado: inexistente"
